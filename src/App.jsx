@@ -7,12 +7,10 @@ import SunFillIcon from 'remixicon-react/SunFillIcon';
 import HumanQuestion from "./components/HumanQuestion";
 import GeneratedOutput from "./components/output/GeneratedOutput";
 import DynamicChart from "./components/chart/ChartSelector";
-import TableInspector from "./components/tableInspector/TableInspector";
 
 
 const App = () => {
   const [isDark, setIsDark] = useState(false);
-
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
@@ -74,7 +72,6 @@ const App = () => {
 
       <Authentication isDark={isDark} />
       <FileUploader isDark={isDark} />
-      <TableInspector/>
       <HumanQuestion isDark={isDark} />
       <GeneratedOutput isDark={isDark} />
       <DynamicChart isDark={isDark} />

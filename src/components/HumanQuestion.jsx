@@ -71,9 +71,9 @@ const HumanQuestion = ({ isDark }) => {
               className="p-1 bg-blue-600 rounded-full cursor-pointer hover:scale-105 transition animated-gradient"
               title="Start voice input"
             >
-    <div className="">
+              <div className="">
 
-              <MdKeyboardVoice size={30} color="white" />
+                <MdKeyboardVoice size={30} color="white" />
               </div>
             </button>
           ) : (
@@ -82,7 +82,7 @@ const HumanQuestion = ({ isDark }) => {
               className="p-2 bg-red-600 rounded-full cursor-pointer hover:scale-105 transition"
               title="Stop voice input"
             >
-              <IoStopCircleOutline size={28} color="white"  />
+              <IoStopCircleOutline size={28} color="white" />
             </button>
           )}
         </div>

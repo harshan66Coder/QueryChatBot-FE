@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AIContext.jsx"; 
 
 export default function Authentication({ isDark }) {
-    const [modelName, setModelName] = useState("");
-    const [apiKey, setApiKey] = useState("");
+    const {
+        modelName,
+        apiKey,
+        setModelName,
+        setApiKey,
+    } = useAuth();
 
     useEffect(() => {
         const storedModel = localStorage.getItem("modelName");
         const storedApiKey = localStorage.getItem("apiKey");
         if (storedModel) setModelName(storedModel);
         if (storedApiKey) setApiKey(storedApiKey);
-    }, []);
+    }, [setModelName, setApiKey]);
 
     const handleAdd = () => {
         localStorage.setItem("modelName", modelName);
@@ -21,9 +26,9 @@ export default function Authentication({ isDark }) {
     const handleClear = () => {
         setModelName("");
         setApiKey("");
-        toast.success("Cleared");
         localStorage.removeItem("modelName");
         localStorage.removeItem("apiKey");
+        toast.success("Cleared");
     };
 
     return (
@@ -31,7 +36,6 @@ export default function Authentication({ isDark }) {
             className={`max-w-full mx-auto p-6 mt-10 rounded-md shadow-sm transition-colors duration-300 ${isDark ? "bg-[#1c1d1e] text-white" : "bg-white text-black"
                 }`}
         >
-
             <div className="flex flex-col md:flex-row md:space-x-6 items-start md:items-center">
                 <div className="flex flex-col md:flex-row md:space-x-4 flex-1 w-full">
                     <label className="flex flex-col mb-4 md:mb-0 flex-1">

@@ -4,7 +4,8 @@ import {
   BarChart, Bar,
   PieChart, Pie, Cell,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer
 } from "recharts";
 
 const data = [
@@ -17,11 +18,12 @@ const data = [
 export default function DynamicChart({ isDark }) {
   const [chartType, setChartType] = useState("line");
 
-  const [colors, setColors] = useState([
-    "#8884d8",
-    "#82ca9d",
-    "#ffc658",
-    "#ff8042",
+  // Default 4 gradient colors: purple, pink, blue, orange
+  const [gradients, setGradients] = useState([
+    { start: "#8a2be2", end: "#4b0082" }, // purple
+    { start: "#ff69b4", end: "#ff1493" }, // pink
+    { start: "#1e90ff", end: "#00bfff" }, // blue
+    { start: "#ffa500", end: "#ff4500" }, // orange
   ]);
 
   const CustomTooltip = ({ active, payload, label }) => {
@@ -36,19 +38,16 @@ export default function DynamicChart({ isDark }) {
     }
     return null;
   };
+
   const handleColorChange = (index, newColor) => {
-    const updated = [...colors];
-    updated[index] = newColor;
-    setColors(updated);
+    const updated = [...gradients];
+    updated[index] = { start: newColor, end: gradients[index].end };
+    setGradients(updated);
   };
 
   return (
-    <div className="flex flex-col items-center space-y-6">
-
-
-      <div className="flex gap-250 ">
-
-
+    <div className="flex flex-col items-center space-y-6 w-full px-4">
+      <div className="flex flex-wrap gap-4 justify-center w-full">
         <select
           className={`p-2 rounded-md shadow-md outline-none transition-colors duration-300 ${isDark
             ? "bg-gray-800 text-white border border-gray-600"
@@ -63,112 +62,126 @@ export default function DynamicChart({ isDark }) {
           <option value="doughnut">Doughnut Chart</option>
           <option value="radar">Radar Chart</option>
         </select>
-        <div className="flex space-x-4">
-          {colors.map((c, i) => (
-            <div key={i} className="flex flex-col items-center">
-              <input
-                type="color"
-                value={c}
-                onChange={(e) => handleColorChange(i, e.target.value)}
-                className="w-10 h-10 cursor-pointer roundes-xl"
-              />
-            </div>
+
+        <div className="flex space-x-2 flex-wrap">
+          {gradients.map((g, i) => (
+            <input
+              key={i}
+              type="color"
+              value={g.start}
+              onChange={(e) => handleColorChange(i, e.target.value)}
+              className="w-10 h-10 cursor-pointer rounded-xl"
+            />
           ))}
         </div>
       </div>
 
-
-      <div>
+      <div className="w-full" style={{ height: "500px", maxWidth: "100%" }}>
         {chartType === "line" && (
-          <LineChart width={1450} height={700} data={data}>
-            <CartesianGrid stroke="#ccc" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip content={<CustomTooltip />} />
-            <Line
-              type="monotone"
-              dataKey="uv"
-              stroke="#8884d8"
-              strokeWidth={3}
-              dot={{ r: 6 }}
-              isAnimationActive={true}
-              animationDuration={2000}
-              animationEasing="ease-in-out"
-            />
-          </LineChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={data}>
+              <defs>
+                <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor={gradients[0].start} />
+                  <stop offset="100%" stopColor={gradients[0].end} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="#ccc" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip content={<CustomTooltip />} />
+              <Line
+                type="monotone"
+                dataKey="uv"
+                stroke="url(#lineGradient)"
+                strokeWidth={3}
+                dot={{ r: 6 }}
+                isAnimationActive={true}
+                animationDuration={2000}
+                animationEasing="ease-in-out"
+              />
+            </LineChart>
+          </ResponsiveContainer>
         )}
 
         {chartType === "bar" && (
-          <BarChart width={1450} height={700} data={data}>
-            <CartesianGrid stroke="#ccc" />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="uv" fill={colors[0]} animationDuration={2000} />
-            <Bar dataKey="pv" fill={colors[1]} animationDuration={2000} />
-          </BarChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={data}>
+              <defs>
+                {gradients.map((g, i) => (
+                  <linearGradient key={i} id={`barGradient${i}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={g.start} />
+                    <stop offset="100%" stopColor={g.end} />
+                  </linearGradient>
+                ))}
+              </defs>
+              <CartesianGrid stroke="#ccc" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="uv" fill="url(#barGradient0)" animationDuration={2000} />
+              <Bar dataKey="pv" fill="url(#barGradient1)" animationDuration={2000} />
+            </BarChart>
+          </ResponsiveContainer>
         )}
 
-        {chartType === "pie" && (
-          <PieChart width={700} height={400}>
-            <Tooltip />
-            <Legend />
-            <Pie
-              data={data}
-              dataKey="uv"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              outerRadius={150}
-              label
-              isAnimationActive={true}
-            >
-              {data.map((_, index) => (
-                <Cell key={index} fill={colors[index % colors.length]} />
-              ))}
-            </Pie>
-          </PieChart>
-        )}
-
-        {chartType === "doughnut" && (
-          <PieChart width={1450} height={700}>
-            <Tooltip />
-            <Legend />
-            <Pie
-              data={data}
-              dataKey="uv"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={80}
-              outerRadius={150}
-              label
-              isAnimationActive={true}
-            >
-              {data.map((_, index) => (
-                <Cell key={index} fill={colors[index % colors.length]} />
-              ))}
-            </Pie>
-          </PieChart>
+        {(chartType === "pie" || chartType === "doughnut") && (
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <defs>
+                {gradients.map((g, i) => (
+                  <linearGradient key={i} id={`pieGradient${i}`} x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stopColor={g.start} />
+                    <stop offset="100%" stopColor={g.end} />
+                  </linearGradient>
+                ))}
+              </defs>
+              <Tooltip />
+              <Legend />
+              <Pie
+                data={data}
+                dataKey="uv"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                innerRadius={chartType === "doughnut" ? 80 : 0}
+                outerRadius={150}
+                label
+                isAnimationActive={true}
+              >
+                {data.map((_, index) => (
+                  <Cell key={index} fill={`url(#pieGradient${index % gradients.length})`} />
+                ))}
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
         )}
 
         {chartType === "radar" && (
-          <RadarChart outerRadius={150} width={1450} height={700} data={data}>
-            <PolarGrid />
-            <PolarAngleAxis dataKey="name" />
-            <PolarRadiusAxis />
-            <Radar
-              name="UV Value"
-              dataKey="uv"
-              stroke={colors[0]}
-              fill={colors[0]}
-              fillOpacity={0.6}
-              isAnimationActive={true}
-            />
-            <Tooltip />
-            <Legend />
-          </RadarChart>
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart data={data}>
+              <defs>
+                <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={gradients[0].start} />
+                  <stop offset="100%" stopColor={gradients[0].end} />
+                </linearGradient>
+              </defs>
+              <PolarGrid />
+              <PolarAngleAxis dataKey="name" />
+              <PolarRadiusAxis />
+              <Radar
+                name="UV Value"
+                dataKey="uv"
+                stroke="url(#radarGradient)"
+                fill="url(#radarGradient)"
+                fillOpacity={0.6}
+                isAnimationActive={true}
+              />
+              <Tooltip />
+              <Legend />
+            </RadarChart>
+          </ResponsiveContainer>
         )}
       </div>
     </div>

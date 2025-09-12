@@ -1,3 +1,4 @@
+export const chartSampledata=`
 import React, { useState } from "react";
 import {
   LineChart, Line,
@@ -7,7 +8,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
   ResponsiveContainer
 } from "recharts";
-import { chartSampledata } from "./ChartSampleData";
+
 const data = [
   { name: "Jan", uv: 400, pv: 240 },
   { name: "Feb", uv: 600, pv: 320 },
@@ -31,7 +32,7 @@ export default function DynamicChart({ isDark }) {
       return (
         <div style={{ background: "transparent", border: "none", padding: "5px" }}>
           <p style={{ margin: 0, color: "#8884d8" }}>
-            {`${label} : ${payload[0].value}`}
+            {label : payload[0].value}
           </p>
         </div>
       );
@@ -49,10 +50,10 @@ export default function DynamicChart({ isDark }) {
     <div className="flex flex-col items-center space-y-6 w-full px-4">
       <div className="flex flex-wrap gap-4 justify-center w-full">
         <select
-          className={`p-2 rounded-md shadow-md outline-none transition-colors duration-300 ${isDark
+          className={p-2 rounded-md shadow-md outline-none transition-colors duration-300 isDark
             ? "bg-gray-800 text-white border border-gray-600"
             : "bg-white text-black border border-gray-300"
-            }`}
+            }
           value={chartType}
           onChange={(e) => setChartType(e.target.value)}
         >
@@ -109,7 +110,7 @@ export default function DynamicChart({ isDark }) {
             <BarChart data={data}>
               <defs>
                 {gradients.map((g, i) => (
-                  <linearGradient key={i} id={`barGradient${i}`} x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient key={i} id={barGradienti} x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor={g.start} />
                     <stop offset="100%" stopColor={g.end} />
                   </linearGradient>
@@ -131,7 +132,7 @@ export default function DynamicChart({ isDark }) {
             <PieChart>
               <defs>
                 {gradients.map((g, i) => (
-                  <linearGradient key={i} id={`pieGradient${i}`} x1="0" y1="0" x2="1" y2="1">
+                  <linearGradient key={i} id={pieGradient} x1="0" y1="0" x2="1" y2="1">
                     <stop offset="0%" stopColor={g.start} />
                     <stop offset="100%" stopColor={g.end} />
                   </linearGradient>
@@ -151,7 +152,7 @@ export default function DynamicChart({ isDark }) {
                 isAnimationActive={true}
               >
                 {data.map((_, index) => (
-                  <Cell key={index} fill={`url(#pieGradient${index % gradients.length})`} />
+                  <Cell key={index} fill={url(#pieGradientindex % gradients.length})} />
                 ))}
               </Pie>
             </PieChart>
@@ -183,14 +184,7 @@ export default function DynamicChart({ isDark }) {
             </RadarChart>
           </ResponsiveContainer>
         )}
-
-        <div className="p-4">
-          <h2 className="text-lg font-bold mb-2">Chart Sample Code</h2>
-          <pre className="bg-gray-900 text-white p-4 rounded-md overflow-x-auto text-sm">
-            <code>{chartSampledata}</code>
-          </pre>
-        </div>
       </div>
     </div>
   );
-}
+}`
